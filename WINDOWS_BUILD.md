@@ -48,6 +48,9 @@ It will:
 
 1. install Python 3.11
 2. install dependencies
-3. run tests
-4. build `dist/MP4Converter.exe`
-5. upload the executable as a workflow artifact
+3. install FFmpeg in CI and copy `ffmpeg.exe` and `ffprobe.exe` into `assets/ffmpeg`
+4. run tests
+5. build `dist/MP4Converter.exe`
+6. upload the executable as a workflow artifact
+
+For GitHub Actions, you do not need to commit `ffmpeg.exe` and `ffprobe.exe` to the repository.

@@ -58,6 +58,8 @@ cd vertumnus
 2. Положить `ffmpeg.exe` и `ffprobe.exe` в `assets/ffmpeg/`
 3. Выполнить `build_windows.ps1`
 
+Для GitHub Actions это не требуется: workflow сам скачивает FFmpeg во время CI-сборки.
+
 ## Зависимости
 
 Python-пакеты:

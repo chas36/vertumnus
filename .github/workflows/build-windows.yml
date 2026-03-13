@@ -33,7 +33,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Validate ffmpeg assets
+      - name: Install FFmpeg
+        shell: pwsh
+        run: |
+          choco install ffmpeg -y --no-progress
+          New-Item -ItemType Directory -Force -Path "assets/ffmpeg" | Out-Null
+          $ffmpeg = (Get-Command ffmpeg).Source
+          $ffprobe = (Get-Command ffprobe).Source
+          Copy-Item $ffmpeg "assets/ffmpeg/ffmpeg.exe" -Force
+          Copy-Item $ffprobe "assets/ffmpeg/ffprobe.exe" -Force
+
+      - name: Validate FFmpeg assets
         shell: pwsh
         run: |
           if (-not (Test-Path "assets/ffmpeg/ffmpeg.exe")) { throw "Missing assets/ffmpeg/ffmpeg.exe" }
