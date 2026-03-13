@@ -163,13 +163,27 @@ def convert_with_progress(
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
     )
 
     last_progress = 0
-    stderr_lines: list[str] = []
+    error_lines: list[str] = []
+    progress_keys = {
+        "bitrate=",
+        "drop_frames=",
+        "dup_frames=",
+        "frame=",
+        "fps=",
+        "out_time=",
+        "out_time_ms=",
+        "out_time_us=",
+        "progress=",
+        "speed=",
+        "stream_0_0_q=",
+        "total_size=",
+    }
     try:
         if process.stdout is None:
             raise RuntimeError("Не удалось открыть stdout ffmpeg.")
@@ -196,15 +210,14 @@ def convert_with_progress(
                     last_progress = progress
                     if progress_callback:
                         progress_callback(progress)
+                continue
 
-        if process.stderr is not None:
-            stderr_lines = [line.strip() for line in process.stderr.readlines() if line.strip()]
+            if not any(line.startswith(key) for key in progress_keys):
+                error_lines.append(line)
         return_code = process.wait()
     finally:
         if process.stdout is not None:
             process.stdout.close()
-        if process.stderr is not None:
-            process.stderr.close()
 
     if return_code == 0:
         if progress_callback:
@@ -213,4 +226,4 @@ def convert_with_progress(
 
     if output_path.exists():
         output_path.unlink(missing_ok=True)
-    return False, stderr_lines[-1] if stderr_lines else "FFmpeg завершился с ошибкой."
+    return False, error_lines[-1] if error_lines else "FFmpeg завершился с ошибкой."
