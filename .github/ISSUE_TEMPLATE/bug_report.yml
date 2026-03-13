@@ -1,0 +1,50 @@
+name: Bug report
+description: Сообщить о баге или регрессии
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Опишите проблему как можно конкретнее: что делали, что ожидали и что получили.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Что произошло
+      placeholder: Краткое описание проблемы
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как воспроизвести
+      placeholder: |
+        1. Открыть приложение
+        2. Добавить файл ...
+        3. Нажать ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидалось
+      placeholder: Ожидаемое поведение
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Платформа
+      options:
+        - macOS
+        - Windows
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Ошибка или лог
+      description: Вставьте текст ошибки FFmpeg, traceback или другой полезный вывод
+      render: text
+
