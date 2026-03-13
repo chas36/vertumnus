@@ -1,0 +1,26 @@
+.DS_Store
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+.venv311/
+venv/
+
+# Local settings
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.spec.bak
+
+# Test and tool output
+.coverage
+htmlcov/
