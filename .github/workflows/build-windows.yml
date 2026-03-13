@@ -1,5 +1,8 @@
 name: Build Windows
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch:
   push:
@@ -37,9 +40,15 @@ jobs:
         shell: pwsh
         run: |
           choco install ffmpeg -y --no-progress
+          $chocoLib = Join-Path $env:ChocolateyInstall "lib"
+          $ffmpegPackage = Get-ChildItem $chocoLib -Directory | Where-Object { $_.Name -like "ffmpeg*" } | Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $ffmpegPackage) { throw "Chocolatey ffmpeg package not found" }
+          $binDir = Join-Path $ffmpegPackage.FullName "tools\ffmpeg\bin"
+          $ffmpeg = Join-Path $binDir "ffmpeg.exe"
+          $ffprobe = Join-Path $binDir "ffprobe.exe"
+          if (-not (Test-Path $ffmpeg)) { throw "Real ffmpeg.exe not found in $binDir" }
+          if (-not (Test-Path $ffprobe)) { throw "Real ffprobe.exe not found in $binDir" }
           New-Item -ItemType Directory -Force -Path "assets/ffmpeg" | Out-Null
-          $ffmpeg = (Get-Command ffmpeg).Source
-          $ffprobe = (Get-Command ffprobe).Source
           Copy-Item $ffmpeg "assets/ffmpeg/ffmpeg.exe" -Force
           Copy-Item $ffprobe "assets/ffmpeg/ffprobe.exe" -Force
 
