@@ -56,6 +56,18 @@ VENV_PATH=.venv ./run_mac.sh
 ./run_mac.sh
 ```
 
+Сборка `.app` для macOS:
+
+```bash
+./build_mac.sh
+```
+
+Результат:
+
+```text
+dist/MP4Converter.app
+```
+
 ### Windows
 
 Сборка описана в [WINDOWS_BUILD.md](WINDOWS_BUILD.md).
@@ -99,6 +111,7 @@ pip install -r requirements.txt
 ├── tests/       # Тесты конвертера, probe и состояния очереди
 ├── ui/          # Главное окно, список файлов, панель настроек, темы, экран ожидания
 ├── main.py      # Точка входа
+├── build_mac.sh # Сборка .app для macOS
 ├── run_mac.sh   # Launcher для macOS
 └── build.spec   # Сборка через PyInstaller
 ```
