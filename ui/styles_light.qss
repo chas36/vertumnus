@@ -21,6 +21,12 @@ QWidget[actionBar="true"] {
     border-radius: 16px;
 }
 
+QWidget#waitingGalleryCard {
+    background: #f9fbfe;
+    border: 1px solid #c7d7ea;
+    border-radius: 16px;
+}
+
 QWidget#settingsContent,
 QWidget#settingsViewport {
     background: #eef4fb;
@@ -158,6 +164,24 @@ QLabel#fileStatus {
     background: #e4eef9;
     border-radius: 10px;
     padding: 4px 10px;
+}
+
+QLabel#waitingGalleryTitle {
+    color: #17304f;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+QLabel#waitingGalleryHint {
+    color: #56708f;
+}
+
+QLabel#waitingGalleryImage {
+    background: #ffffff;
+    border: 1px solid #bfd0e3;
+    border-radius: 12px;
+    color: #607a99;
+    padding: 6px;
 }
 
 QLabel[fieldLabel="true"] {

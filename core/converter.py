@@ -7,6 +7,7 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
+from core.process_utils import hidden_process_kwargs
 from models.conversion_settings import ConversionSettings
 from models.file_item import FileItem
 
@@ -166,6 +167,7 @@ def convert_with_progress(
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        **hidden_process_kwargs(),
     )
 
     last_progress = 0

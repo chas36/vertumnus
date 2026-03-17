@@ -21,6 +21,12 @@ QWidget[actionBar="true"] {
     border-radius: 16px;
 }
 
+QWidget#waitingGalleryCard {
+    background: #1b2132;
+    border: 1px solid #2f3a56;
+    border-radius: 16px;
+}
+
 QWidget#settingsContent,
 QWidget#settingsViewport {
     background: #131722;
@@ -170,6 +176,24 @@ QLabel#fileStatus {
     background: #162033;
     border-radius: 10px;
     padding: 4px 10px;
+}
+
+QLabel#waitingGalleryTitle {
+    color: #fff7ed;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+QLabel#waitingGalleryHint {
+    color: #9eb4d0;
+}
+
+QLabel#waitingGalleryImage {
+    background: #0f1320;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    color: #8fa6c4;
+    padding: 6px;
 }
 
 QSplitter::handle {

@@ -8,6 +8,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from core.process_utils import hidden_process_kwargs
 from models.media_stream import MediaStream
 
 
@@ -116,6 +117,7 @@ def probe_media(path: Path, ffprobe_binary: str | None = None) -> ProbeResult:
         capture_output=True,
         text=True,
         check=False,
+        **hidden_process_kwargs(),
     )
     if result.returncode != 0:
         stderr = result.stderr.strip() or "ffprobe завершился с ошибкой."

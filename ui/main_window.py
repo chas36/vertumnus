@@ -32,6 +32,7 @@ from ui.file_list_widget import FileListWidget
 from ui.history_dialog import HistoryDialog
 from ui.settings_panel import SettingsPanel
 from ui.theme import load_stylesheet
+from ui.waiting_gallery import WaitingGalleryWidget
 
 
 class MainWindow(QMainWindow):
@@ -42,6 +43,7 @@ class MainWindow(QMainWindow):
         self.setAcceptDrops(True)
 
         self.file_list = FileListWidget()
+        self.waiting_gallery = WaitingGalleryWidget()
         self.settings_panel = SettingsPanel()
         self.worker: ConversionWorker | None = None
         self._items_by_path: dict[str, FileItem] = {}
@@ -83,6 +85,7 @@ class MainWindow(QMainWindow):
         self._connect_signals()
         self._build_menu()
         self._restore_queue()
+        self.sync_waiting_gallery_from_settings()
         self._refresh_summary()
 
     def _build_ui(self) -> None:
@@ -140,6 +143,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(12)
+        layout.addWidget(self.waiting_gallery)
         layout.addWidget(self.file_list, stretch=1)
         layout.addWidget(self.summary_label)
         layout.addWidget(self.queue_label)
@@ -176,6 +180,7 @@ class MainWindow(QMainWindow):
         self.filter_combo.currentIndexChanged.connect(self.apply_filter)
         self.settings_panel.theme_changed.connect(self.apply_theme)
         self.settings_panel.settings_changed.connect(self.persist_queue_state)
+        self.settings_panel.settings_changed.connect(self.sync_waiting_gallery_from_settings)
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:  # noqa: N802
         if event.mimeData().hasUrls():
@@ -297,6 +302,7 @@ class MainWindow(QMainWindow):
 
         self.start_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
+        self.waiting_gallery.set_active(True)
         self.statusBar().showMessage("Конвертация запущена")
         self.apply_filter()
         self.persist_queue_state()
@@ -378,6 +384,7 @@ class MainWindow(QMainWindow):
     def on_all_done(self) -> None:
         self.start_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
+        self.waiting_gallery.set_active(False)
         self._refresh_summary()
 
         completed = sum(1 for item in self._items_by_path.values() if item.status == "done")
@@ -550,3 +557,8 @@ class MainWindow(QMainWindow):
 
     def persist_queue_state(self) -> None:
         save_queue_state(list(self._items_by_path.values()))
+
+    def sync_waiting_gallery_from_settings(self) -> None:
+        self.waiting_gallery.set_image_directory(self.settings_panel.waiting_photos_dir())
+        running = bool(self.worker and self.worker.isRunning())
+        self.waiting_gallery.set_active(running)

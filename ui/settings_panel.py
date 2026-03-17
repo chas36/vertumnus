@@ -40,6 +40,9 @@ class SettingsPanel(QWidget):
         self.output_edit.setPlaceholderText("/Users/you/Videos/Converted")
         self.output_button = QPushButton("Выбрать")
         self.near_source_checkbox = QCheckBox("Сохранять рядом с оригиналом")
+        self.waiting_photos_edit = QLineEdit()
+        self.waiting_photos_edit.setPlaceholderText("C:/Users/you/Pictures/Bears")
+        self.waiting_photos_button = QPushButton("Выбрать папку")
 
         self.resolution_combo = QComboBox()
         self.resolution_combo.addItem("Оригинал", "original")
@@ -139,6 +142,22 @@ class SettingsPanel(QWidget):
         output_layout.addLayout(output_buttons)
         output_layout.addWidget(self.near_source_checkbox)
 
+        self.waiting_card = QGroupBox("Экран ожидания")
+        waiting_layout = QVBoxLayout(self.waiting_card)
+        waiting_layout.setSpacing(8)
+        waiting_layout.addWidget(self._field_block("Папка с фотографиями", self.waiting_photos_edit))
+        waiting_buttons = QHBoxLayout()
+        waiting_buttons.setContentsMargins(0, 0, 0, 0)
+        waiting_buttons.addWidget(self.waiting_photos_button)
+        waiting_buttons.addStretch(1)
+        waiting_layout.addLayout(waiting_buttons)
+        waiting_hint = QLabel(
+            "Во время конвертации приложение может показывать слайдшоу. "
+            "Поддерживаются JPG, PNG, WEBP и BMP."
+        )
+        waiting_hint.setWordWrap(True)
+        waiting_layout.addWidget(waiting_hint)
+
         self.streams_card = QGroupBox("Дорожки выбранного файла")
         streams_layout = QVBoxLayout(self.streams_card)
         streams_layout.setSpacing(8)
@@ -160,6 +179,7 @@ class SettingsPanel(QWidget):
         self.content_layout.addWidget(self.profile_card)
         self.content_layout.addWidget(self.quality_card)
         self.content_layout.addWidget(self.output_card)
+        self.content_layout.addWidget(self.waiting_card)
         self.content_layout.addWidget(self.streams_card)
         self.content_layout.addStretch(1)
         self.content_layout.addWidget(footer)
@@ -195,6 +215,7 @@ class SettingsPanel(QWidget):
             self.preset_combo,
             self.advanced_toggle,
             self.theme_toggle,
+            self.waiting_photos_edit,
         ]
         for control in controls:
             if hasattr(control, "currentIndexChanged"):
@@ -209,6 +230,7 @@ class SettingsPanel(QWidget):
         self.subtitle_enabled_checkbox.toggled.connect(self._on_stream_control_changed)
         self.subtitle_default_checkbox.toggled.connect(self._on_stream_control_changed)
         self.output_button.clicked.connect(self.choose_output_dir)
+        self.waiting_photos_button.clicked.connect(self.choose_waiting_photos_dir)
 
     def _on_global_control_changed(self) -> None:
         self._sync_ui_state()
@@ -235,6 +257,7 @@ class SettingsPanel(QWidget):
 
         self.quality_card.setVisible(advanced)
         self.output_card.setVisible(advanced)
+        self.waiting_card.setVisible(advanced)
         self.streams_card.setVisible(advanced)
 
         self.fps_combo.setEnabled(advanced and custom_profile)
@@ -269,6 +292,11 @@ class SettingsPanel(QWidget):
         directory = QFileDialog.getExistingDirectory(self, "Выберите папку вывода")
         if directory:
             self.output_edit.setText(directory)
+
+    def choose_waiting_photos_dir(self) -> None:
+        directory = QFileDialog.getExistingDirectory(self, "Выберите папку с фотографиями")
+        if directory:
+            self.waiting_photos_edit.setText(directory)
 
     def to_settings(self) -> ConversionSettings:
         output_dir = Path(self.output_edit.text()).expanduser() if self.output_edit.text().strip() else None
@@ -339,6 +367,7 @@ class SettingsPanel(QWidget):
         index = self.profile_combo.findData(profile)
         self.profile_combo.setCurrentIndex(max(index, 0))
         self.output_edit.setText(str(self.qt_settings.value("output_dir", "")))
+        self.waiting_photos_edit.setText(str(self.qt_settings.value("waiting_photos_dir", "")))
         self.near_source_checkbox.setChecked(self.qt_settings.value("save_next_to_source", True, bool))
         self._set_combo_data(self.resolution_combo, str(self.qt_settings.value("resolution", "original")))
         self._set_combo_data(self.fps_combo, str(self.qt_settings.value("fps", "0")))
@@ -357,6 +386,7 @@ class SettingsPanel(QWidget):
         self.qt_settings.setValue("theme", self.current_theme())
         self.qt_settings.setValue("profile", settings.profile)
         self.qt_settings.setValue("output_dir", str(settings.output_dir or ""))
+        self.qt_settings.setValue("waiting_photos_dir", self.waiting_photos_edit.text().strip())
         self.qt_settings.setValue("save_next_to_source", settings.save_next_to_source)
         self.qt_settings.setValue("resolution", settings.resolution)
         self.qt_settings.setValue("fps", str(settings.fps))
@@ -366,3 +396,9 @@ class SettingsPanel(QWidget):
 
     def current_theme(self) -> str:
         return "light" if self.theme_toggle.isChecked() else "dark"
+
+    def waiting_photos_dir(self) -> Path | None:
+        raw = self.waiting_photos_edit.text().strip()
+        if not raw:
+            return None
+        return Path(raw).expanduser()
